@@ -1,19 +1,24 @@
 const form = document.querySelector("#form");
 form.addEventListener("submit", generateForm);
-let history = [];
+
 const checkboxes = document.querySelector(".checkboxes");
+let history = [];
 let maxChecked;
 let listLen = 0;
+
+function getOptions()
+{
+  let checkboxesText = (form.options.value.split("\n").filter((el) => el !== ''));
+  return checkboxesText;
+}
 
 function generateForm(e)
 {
   e.preventDefault();
   let form = e.target;
   maxChecked = +form.maxChecked.value;
-  const checkboxesText = form.options.value.split("\n");
-  listLen = checkboxesText.length;
-    let template = document.querySelector("template").innerHTML;
-    for (let checkboxText of checkboxesText)
+  let template = document.querySelector("template").innerHTML;
+    for (let checkboxText of getOptions())
     {
       let renderedHtml = Mustache.render(template, {checkbox_text: checkboxText});
       checkboxes.innerHTML += renderedHtml;
@@ -21,8 +26,13 @@ function generateForm(e)
     form.hidden = true;
 }
 
+form.maxChecked.addEventListener('focus', (e) =>{
+  console.log(getOptions());
+  listLen = getOptions().length;
+  e.target.value = listLen - 1;
+});
 
-  checkboxes.addEventListener("click", (e) =>
+checkboxes.addEventListener("click", (e) =>
   {
     let clicked = e.target;
     if (!clicked.classList.contains("checkbox")) return;
